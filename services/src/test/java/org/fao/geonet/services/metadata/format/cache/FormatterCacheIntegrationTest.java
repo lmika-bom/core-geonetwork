@@ -64,6 +64,8 @@ public class FormatterCacheIntegrationTest extends AbstractServiceIntegrationTes
         this.formatterCache = _applicationContext.getBean(FormatterCache.class);
         this.stagingProfile = systemInfo.getStagingProfile();
         systemInfo.setStagingProfile(SystemInfo.STAGE_PRODUCTION);
+
+        SERVLET_REQUEST.addHeader("user-agent", "JUnit");
     }
 
     @After
@@ -85,13 +87,13 @@ public class FormatterCacheIntegrationTest extends AbstractServiceIntegrationTes
             assertPublished(key, false);
         }
 
-        publish.publish("eng", new MockHttpServletRequest("GET", "requesturi"), metadataId, false);
+        publish.publish("eng", SERVLET_REQUEST, metadataId, false);
         assertPublished(key, true);
 
-        publish.unpublish("eng", new MockHttpServletRequest("GET", "requesturi"), metadataId, false);
+        publish.unpublish("eng", SERVLET_REQUEST, metadataId, false);
         assertPublished(key, false);
 
-        publish.publish("eng", new MockHttpServletRequest("GET", "requesturi"), metadataId, false);
+        publish.publish("eng", SERVLET_REQUEST, metadataId, false);
         assertPublished(key, true);
     }
 

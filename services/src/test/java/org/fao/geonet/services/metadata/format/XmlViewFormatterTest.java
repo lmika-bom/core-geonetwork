@@ -40,6 +40,7 @@ public class XmlViewFormatterTest extends AbstractFormatterTest {
     @SuppressWarnings("unchecked")
     public void testBasicFormat() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("user-agent", "JUnit");
         request.addParameter("html", "true");
 
         final String formatterId = "xml_view";
@@ -51,6 +52,7 @@ public class XmlViewFormatterTest extends AbstractFormatterTest {
 //        measureFormatterPerformance(request, formatterId);
 
         final MockHttpServletResponse response = new MockHttpServletResponse();
+        response.addHeader("user-agent", "JUnit");
         formatService.exec("eng", "html", "" + id, null, formatterId, "true", false, _100, new ServletWebRequest(request, response));
         final String view = response.getContentAsString();
 //        Files.write(view, new File("e:/tmp/view.html"), Constants.CHARSET);

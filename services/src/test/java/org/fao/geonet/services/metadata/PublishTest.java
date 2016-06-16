@@ -82,6 +82,7 @@ public class PublishTest extends AbstractServiceIntegrationTest {
         dataManager.indexMetadata(metadataId, true);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("user-agent", "JUnit");
 
         PublishReport report = publishService.publish("eng", request, metadataId, false);
         assertCorrectReport(report, 1, 0, 0, 0);
@@ -122,6 +123,7 @@ public class PublishTest extends AbstractServiceIntegrationTest {
         allowedRepository.deleteAll();
 
         MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("user-agent", "JUnit");
 
         String ids = Joiner.on(",").join(this.metadataIds);
 
@@ -148,6 +150,7 @@ public class PublishTest extends AbstractServiceIntegrationTest {
     @Test
     public void testUnpublishSingle() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("user-agent", "JUnit");
 
         final String metadataId = metadataIds.get(0);
 
@@ -169,6 +172,7 @@ public class PublishTest extends AbstractServiceIntegrationTest {
     @Test
     public void testUnpublishMultiple() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("user-agent", "JUnit");
         String ids = Joiner.on(",").join(this.metadataIds);
 
         PublishReport report = publishService.unpublish("eng", request, ids, false);
@@ -195,6 +199,7 @@ public class PublishTest extends AbstractServiceIntegrationTest {
     @Test
     public void testUnpublishSelection() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("user-agent", "JUnit");
         ServiceContext context = createServiceContext();
         loginAsAdmin(context);
 

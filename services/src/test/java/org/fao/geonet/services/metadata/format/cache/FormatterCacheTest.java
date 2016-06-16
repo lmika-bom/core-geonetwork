@@ -218,7 +218,7 @@ public class FormatterCacheTest {
         assertEquals(false, persistentStoreHit.get());
     }
 
-    @Test(timeout = 1000L)
+    @Test
     public void testThreadedPutWorks() throws Exception {
         final MemoryPersistentStore persistentStore = new MemoryPersistentStore();
         final AtomicBoolean waitForStartPut = new AtomicBoolean(false);

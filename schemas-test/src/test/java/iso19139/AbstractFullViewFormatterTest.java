@@ -127,6 +127,7 @@ public abstract class AbstractFullViewFormatterTest extends AbstractFormatterTes
         public Format invoke() throws Exception {
             view = null;
             MockHttpServletRequest request = new MockHttpServletRequest();
+            request.addHeader("user-agent", "JUnit");
             MockHttpServletResponse response = new MockHttpServletResponse();
 //            measureFormatterPerformance(request, formatterId);
 
