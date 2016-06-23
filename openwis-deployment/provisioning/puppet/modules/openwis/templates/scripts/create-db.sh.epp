@@ -1,0 +1,26 @@
+#!/bin/bash
+
+. $(dirname $(realpath $0))/setenv.sh
+
+test -f ${TOUCHFILES_DIR}/db-provisioned && exit
+
+export POSTGRESQL_VERSION=<%= $postgresql_version %>
+export POSTGIS_VERSION=<%= $postgis_version %>
+
+as_postgres psql -c 'CREATE EXTENSION adminpack;'
+
+as_postgres psql -f /usr/pgsql-${POSTGRESQL_VERSION}/share/contrib/postgis-${POSTGIS_VERSION}/postgis.sql > /dev/null
+as_postgres psql -f /usr/pgsql-${POSTGRESQL_VERSION}/share/contrib/postgis-${POSTGIS_VERSION}/postgis_comments.sql > /dev/null
+as_postgres psql -f /usr/pgsql-${POSTGRESQL_VERSION}/share/contrib/postgis-${POSTGIS_VERSION}/spatial_ref_sys.sql > /dev/null
+as_postgres psql -f /usr/pgsql-${POSTGRESQL_VERSION}/share/contrib/postgis-${POSTGIS_VERSION}/legacy.sql > /dev/null
+
+as_postgres createdb OpenWIS
+
+as_postgres psql -d OpenWIS -c 'CREATE EXTENSION postgis;'
+as_postgres psql -d OpenWIS -c 'CREATE EXTENSION postgis_topology;'
+as_postgres psql -d OpenWIS -c 'CREATE EXTENSION ogr_fdw;'
+as_postgres psql -d OpenWIS -c 'CREATE EXTENSION pgrouting;'
+
+as_postgres psql -f ${CONFIG_SRC_DIR}/database/openwis-roles.sql
+
+touch ${TOUCHFILES_DIR}/db-provisioned

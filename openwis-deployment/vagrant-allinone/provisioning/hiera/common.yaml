@@ -1,0 +1,8 @@
+---
+openwis::provisioning_root_dir: /vagrant/provisioning
+openwis::touchfiles_dir:        /vagrant/provisioning/touchfiles
+openwis::logs_root_dir:         /vagrant/logs
+
+openwis::portal::use_local_portal_war: true
+openwis::portal::local_portal_war:     /tmp/portal_workspace/web/target/geonetwork.war
+

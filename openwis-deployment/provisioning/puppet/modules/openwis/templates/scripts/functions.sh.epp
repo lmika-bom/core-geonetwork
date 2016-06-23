@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -o allexport
+set -o errexit 
+set -o nounset
+
+export SCRIPTS_DIR=$(dirname $(realpath $0))
+export PROVISIONING_DIR=$(realpath ${SCRIPTS_DIR}/..)
+export CONFIG_DIR=${PROVISIONING_DIR}/config
+export WORKING_FOLDER=${PROVISIONING_DIR}/working
+export PORTAL_WORKSPACE=${PROVISIONING_DIR}/portal_workspace
+
+function as_root() {
+	sudo "$@"
+}
+
+function as_tomcat() {
+	sudo -u tomcat "$@"
+}
+
+function as_postgres() {
+	sudo -u postgres "$@"
+}
+
+cd ${SCRIPTS_DIR}
