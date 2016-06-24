@@ -28,12 +28,24 @@ A bare-bones CentOS 7 has been created with the following included:
 
 This box should be downloaded & added to Vagrant by running:
 ```
-vagrant box add --force openwis/centos7-xx https://repository-openwis-association.forge.cloudbees.com/artifacts/vagrant/openwis-centos-7.box
+vagrant box add --force openwis/centos7 https://repository-openwis-association.forge.cloudbees.com/artifacts/vagrant/openwis-centos-7.box
 ```
+
+## Vagrant Environment Configuration
+
+Each Vagrant environment requires a `config.yaml` file with the appropriate settings for that environment.  Each environment comes with a `config.yaml.sample` file that can be used as the basis for the configuraion.
+
+When setting up an environment for the first time, copy the `config.yaml.sample` to `config.yaml` and the set the parameters appropriately for your environment requirements, as per the following table.
+
+| Parameter          | Description
+| ------------------ | ------------
+| `portal_workspace` | Specifies the location of the Portal development workspace on the host machine (i.e. where you have checked out the _cor-geonetwork_ project). <br/>e.g. `D:/Projects/OpenWIS/code/core-geonetwork`
+
+> **Note:** More parameters will get added to sample configuration file over time, so you are likely to have to update your `config.yaml` file after pulling the latest changes from GitHUB.
 
 ## Standing Up a Vagrant Environment
 
-Ensure that you have followed the _Getting Started_ steps above, then from in the approritate Vagrant environment sub-folder run `vagrant up`.
+Ensure that you have followed the _Getting Started_ and _xx_ steps above, then from in the appropriate Vagrant environment sub-folder run `vagrant up`.
 
 For example to run-up an _all-in-one_ environment do:
 ```
@@ -54,6 +66,17 @@ vagrant up
 
 ## Accessing the Deployed Applications
 
+A number of ports are being mapped between the guest machine(s) & the host machine to allow direct access to applications runing on the guest(s).  The current ports are mapped:
+
+| Host Port | Guest Port | Reason / Notes
+| --------- | -----------| --------------
+| 10080     | 8080       | Access to web application(s). <br/>This currently maps directly to Tomcat, but this will change to Apache in the future
+| 18000     | 8000       | Tomcat remote debug port. Allows remote debugging from Eclipse.
+
+### Web URLs
+
+> Portal : http://localhost:10080/geonetwork
+
 ## Available Vagrant Environment Types
 
 There is currently only one Vagrant configuration available that stands up an _all-in-one_ environment, where everything is deployed to a single server instance.  See below for the description of this environment.
@@ -67,8 +90,55 @@ The _vagrant-allinone_ sub-folder, contains the Vagrant scripts that will stand-
 This instance currently contains the following components:
 
 * An empty PostgeSQL database
-* The GeoNetwork/OpenWIS Portal deployed into the
-
-# Puppet for Server Provisioning
+* The GeoNetwork/OpenWIS Portal deployed into Tomcat
 
 # Shell Scripts for Component Deployment/Configuration
+
+The following shell scripts are available for installing/deploying the OpenWIS components - these can be invoked either from Puppet or manually.
+
+| Script             | Description
+| -------------------| -----------
+| `create-db.sh`     | Creates the base OpenWIS database, roles, etc
+| `deploy-portal.sh` | (re)Deploys the Portal (either from a local or remote build - see `Puppet Configuration` below for more details)
+
+# Puppet for Server provisioning
+
+The puppet scripts provided here are designed to maintain the base server configuration (firewall, installed packages, etc) and the required OpenWIS middleware (PostgeSQL, Tomcat, JBoss, Apache HTTPD etc).
+
+The Puppet provisioning scripts also customize the OpenWIS application configuration files and perform a one-off deployment/installation of the OpenWIS components, but **do not maintain these** on an ongoing basis.  The OpenWIS installations/deployments are performed using Bash shell scripts, which are simply invoked buy Puppet.
+
+| Puppet Class                    | Description
+| ------------------------------- | -----------
+| `openwis`                         | Common base OpenWIS features ('openwis' user, folders, links etc) & packages
+| `openwis::middleware::httpd`      | Installs & configures the Apache HTTPD service
+| `openwis::middleware::postgresql` | Installs & configures the PostgeSQL database
+| `openwis::middleware::tomcat`     | Installs & configures the Apache Tomcat service
+| `openwis::apache_proxy`           | Configures Apache HTTPD to be a reverse proxy for OpenWIS
+| `openwis::database`               | Creates the base OpenWIS database, roles, tables etc.  Relies on the `create-db.sh` script.
+| `openwis::portal`                 | Deploys & configures the OpenWIS 4.x Portal.   Relies on the `deploy-portal.sh` script.
+
+# Puppet Configuration
+
+Puppet is configured via [Hiera](https://docs.puppet.com/hiera/), allowing a base, default, configuration to be specified & then overridden for each environment and/or server.
+
+## Hiera Hierarchy Specification
+
+> The new Hiera hierachy hasn't yet been set-up for the new OpenWIS 4.x Puppet scripts.  When this has been done, details will be available here.
+
+## Puppet Configuration parameters
+
+The following table lists the available configuration parameters, along with the default Hiera values and any fall-back defaults that have been built into the Puppet script (used when no Hiera value can be discovered).
+
+| Parameter Name                                        | Default Hiera Value | Default Coded into Puppet | Description
+| ----------------------------------------------------- | ------------------- | ------------------------- | -----------
+| ** Common Configuration **                            |                     |                           |
+| `openwis::provisioning_root_dir`                      |                     | /tmp/provisioning         | The base folder used as a _working area_ by the Puppet provisioning scripts
+| `openwis::touchfiles_dir`                             |                     | /home/openwis/touchfiles  | The folder that will hold 'touch files', used by the Puppet scripts & schell scripts to ensure that certain scripts/commands are only executed once
+| `openwis::logs_root_dir`                              |                     | /home/openwis/logs        | The root folder where the various log files will be written.  Re-configuring the various compoents to log to the same locations should simplify support/debugging/investigation
+| ** Portal Specific Configuration **                   |                     |                           |
+| `openwis::portal::use_local_portal_war`               |                     | false                     | Whether use a locally built portal WAR file
+| `openwis::portal::local_portal_war`                   |                     | undef (undefined)         | Where to find the local Portal WAR file (full path & file), if _local_ deployment is specified
+| `openwis::portal::remote_portal_war`                  |                     | undef (undefined)         | Where to find the remote Portal WAR file (protocol, repository, full path & file), if _remote_ deployment is specified
+| ** Database Specific Configuration **                 |                     |                           |
+| `openwis::middleware::postgresql::postgresql_version` |                     | 9.5                       | The version of PostgeSQL to install
+| `openwis::middleware::postgresql::postgis_version`    | 2.2                 |                           | The version of PostGIS to install
