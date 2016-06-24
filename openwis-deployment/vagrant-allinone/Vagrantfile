@@ -4,22 +4,18 @@
 require 'yaml'
 
 config 		= YAML.load_file 'config.yaml'
-host_config	= config['host'] 
+host_config	= config['host']
 
 Vagrant.configure("2") do |config|
 
   config.vm.box = "openwis/centos7"
-  
-  config.vm.hostname = "ow4.dev.openwis.io"
-  
-  # config.vm.box_check_update = false
 
-  # Apache
-  config.vm.network "forwarded_port", guest: 80, host: 10080
-  # Tomcat remote debug
+  config.vm.hostname = "ow4.dev.openwis.io"
+
+  # Portal Web Access (will switch to Apache when configured)
+  config.vm.network "forwarded_port", guest: 8080, host: 10080
+  # Portal remote debug
   config.vm.network "forwarded_port", guest: 8000, host: 18000
-  # Tomcat (to be removed when proxying configured)
-  config.vm.network "forwarded_port", guest: 8080, host: 18080
 
   # config.vm.network "private_network", ip: "192.168.33.10"
 
@@ -27,9 +23,8 @@ Vagrant.configure("2") do |config|
 
   config.vm.synced_folder host_config['portal_workspace'], "/tmp/portal_workspace"
   config.vm.synced_folder "../provisioning", "/tmp/provisioning"
-    
+
   config.vm.provider "virtualbox" do |vb|
-    # vb.gui = true
     vb.memory = 2048
 	vb.cpus = 2
   end
@@ -38,7 +33,7 @@ Vagrant.configure("2") do |config|
   #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
   # end
 
-  # 
+  #
   config.vm.provision "puppet" do |default|
     default.manifest_file     = "default.pp"
     default.manifests_path    = "provisioning/manifests"
