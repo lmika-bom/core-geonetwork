@@ -1,10 +1,10 @@
 class openwis::database ()
 {
     require openwis
-    
+
     # ensure PostgeSQL installed & configured
     require openwis::middleware::postgresql
-    
+
     $scripts_dir        = $openwis::scripts_dir
     $config_src_dir     = $openwis::config_src_dir
     $touchfiles_dir     = $openwis::touchfiles_dir
@@ -14,17 +14,17 @@ class openwis::database ()
     #==============================================================================
     # Configure scripts
     #==============================================================================
-    file {"${config_src_dir}/database":
+    file { "${config_src_dir}/database":
         ensure => directory
     } ->
-    file {"${config_src_dir}/database/openwis-roles.sql":
+    file { "${config_src_dir}/database/openwis-roles.sql":
         ensure  => file,
         content => epp("openwis/database/openwis-roles.sql", {
             postgresql_version => $postgresql_version,
             postgis_version    => $postgis_version
         })
     } ->
-    file {"${scripts_dir}/create-db.sh":
+    file { "${scripts_dir}/create-db.sh":
         ensure  => file,
         mode    => "0666",
         content => epp("openwis/scripts/create-db.sh", {
