@@ -9,8 +9,9 @@ class openwis::portal (
     # ensure Apache Tomcat installed & configured
     require openwis::middleware::tomcat
 
-    $scripts_dir    = $openwis::scripts_dir
-    $config_src_dir = $openwis::config_src_dir
+    $scripts_dir         = $openwis::scripts_dir
+    $config_src_dir      = $openwis::config_src_dir
+    $db_server_host_name = $openwis::db_server_host_name
 
     #==============================================================================
     # Configure scripts
@@ -30,16 +31,18 @@ class openwis::portal (
     } ->
     file { "${config_src_dir}/portal/config-db/postgres.xml":
         ensure  => file,
-        content => epp("openwis/portal/config-db/postgres.xml")
+        content => epp("openwis/portal/config-db/postgres.xml", {
+            db_server_host_name => $db_server_host_name
+          })
     } ->
     file { "${scripts_dir}/deploy-portal.sh":
         ensure  => file,
         mode    => "0666",
-        content => epp("openwis/scripts/deploy-portal.sh", {
+        content => dos2unix(epp("openwis/scripts/deploy-portal.sh", {
             use_local_portal_war => $use_local_portal_war,
             local_portal_war     => $local_portal_war,
             remote_portal_war    => $remote_portal_war
-        })
+        }))
     }
 
     #==============================================================================

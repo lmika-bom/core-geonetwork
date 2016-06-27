@@ -5,7 +5,5 @@ Package {
 class { openwis::apache_proxy:
 }
 
-class { openwis::database:
-} ->
 class { openwis::portal:
 }

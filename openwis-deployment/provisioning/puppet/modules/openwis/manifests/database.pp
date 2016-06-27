@@ -27,10 +27,10 @@ class openwis::database ()
     file { "${scripts_dir}/create-db.sh":
         ensure  => file,
         mode    => "0666",
-        content => epp("openwis/scripts/create-db.sh", {
+        content => dos2unix(epp("openwis/scripts/create-db.sh", {
             postgresql_version => $postgresql_version,
             postgis_version    => $postgis_version
-        })
+        }))
     }
 
     #==============================================================================

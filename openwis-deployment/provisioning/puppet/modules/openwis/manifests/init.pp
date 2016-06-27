@@ -2,6 +2,7 @@ class openwis (
     $provisioning_root_dir = "/tmp/provisioning",
     $touchfiles_dir        = "/home/openwis/touchfiles",
     $logs_root_dir         = "/home/openwis/logs",
+    $db_server_host_name,
 )
 {
     $scripts_dir    = "${provisioning_root_dir}/scripts"
@@ -57,17 +58,17 @@ class openwis (
     file { "${scripts_dir}/setenv.sh":
         ensure  => file,
         mode    => "0666",
-        content => epp("openwis/scripts/setenv.sh", {
+        content => dos2unix(epp("openwis/scripts/setenv.sh", {
             config_src_dir => $config_src_dir,
             working_dir    => $working_dir,
             touchfiles_dir => $touchfiles_dir
-        }),
+        })),
         require => File["${scripts_dir}"]
     } ->
     file { "${scripts_dir}/functions.sh":
         ensure  => file,
         mode    => "0666",
-        content => epp("openwis/scripts/functions.sh")
+        content => dos2unix(epp("openwis/scripts/functions.sh"))
     }
 
 }

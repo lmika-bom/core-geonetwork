@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -o allexport
-set -o errexit 
+set -o errexit
 set -o nounset
 
 export SCRIPTS_DIR=$(dirname $(realpath $0))

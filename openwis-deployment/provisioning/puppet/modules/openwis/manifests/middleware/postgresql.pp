@@ -47,12 +47,19 @@ class openwis::middleware::postgresql (
         creates => "/var/lib/pgsql/${postgresql_version}/initdb.log",
         notify  => Service["postgresql-${postgresql_version}"],
         require => Package["postgresql${postgresql_short_version}-server"]
-    } ->
-    file_line { "pg_hba.conf: enable remote password connections":
-        path  => "/var/lib/pgsql/${postgresql_version}/data/pg_hba.conf",
-        line  => "host    all             all             0.0.0.0/0               md5",
-        match => "host    all             all             127.0.0.1/32            ident"
-    }
+        } ->
+        file_line { "postgresql.conf: listen on all interfaces":
+            path  => "/var/lib/pgsql/${postgresql_version}/data/postgresql.conf",
+            line  => "listen_addresses = '*'",
+            match => "^.?listen_addresses",
+            notify  => Service["postgresql-${postgresql_version}"],
+        } ->
+        file_line { "pg_hba.conf: enable remote password connections":
+            path  => "/var/lib/pgsql/${postgresql_version}/data/pg_hba.conf",
+            line  => "host    all             all             0.0.0.0/0               md5",
+            match => "host    all             all             127.0.0.1/32            ident",
+            notify  => Service["postgresql-${postgresql_version}"],
+        }
 
     service { "postgresql-${postgresql_version}":
       ensure => running,

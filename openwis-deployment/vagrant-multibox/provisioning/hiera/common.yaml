@@ -6,6 +6,6 @@ openwis::logs_root_dir:         /vagrant/logs
 openwis::portal::use_local_portal_war: true
 openwis::portal::local_portal_war:     /tmp/portal_workspace/web/target/geonetwork.war
 
-openwis::db_server_host_name:     ow4-dev
-openwis::data_server_host_name:   ow4-dev
-openwis::portal_server_host_name: ow4-dev
+openwis::db_server_host_name:     ow4dev-db
+openwis::data_server_host_name:   ow4dev-data
+openwis::portal_server_host_name: ow4dev-portal
