@@ -37,7 +37,7 @@ class openwis::portal (
     } ->
     file { "${scripts_dir}/deploy-portal.sh":
         ensure  => file,
-        mode    => "0666",
+        mode    => "0766",
         content => dos2unix(epp("openwis/scripts/deploy-portal.sh", {
             use_local_portal_war => $use_local_portal_war,
             local_portal_war     => $local_portal_war,

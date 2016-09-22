@@ -1,0 +1,1 @@
+/subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=DEBUG)

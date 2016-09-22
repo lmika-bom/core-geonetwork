@@ -10,6 +10,8 @@ class openwis (
     $working_dir    = "${provisioning_root_dir}/working"
     $downloads_dir  = "${provisioning_root_dir}/downloads"
 
+    $openwis_home   = "/home/openwis"
+
     #==========================================================================
     # Install common utility packages
     #==========================================================================
@@ -26,7 +28,7 @@ class openwis (
     user { openwis:
         ensure => present,
         gid    => "openwis",
-        home   => "/home/openwis",
+        home   => "${$openwis_home}",
         shell  => "/bin/bash"
     }
 
@@ -37,6 +39,7 @@ class openwis (
             "${touchfiles_dir}",
             "${logs_root_dir}"]:
         ensure => directory,
+        owner => "openwis"
     }
 
     $dirtree = dirtree("${provisioning_root_dir}")

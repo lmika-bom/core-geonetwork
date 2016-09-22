@@ -1,0 +1,6 @@
+#!/bin/bash
+
+JBOSS_URL="http://download.jboss.org/jbossas/7.1/jboss-as-7.1.1.Final/jboss-as-7.1.1.Final.zip"
+
+wget $JBOSS_URL
+unzip $JBOSS_URL
